@@ -88,48 +88,34 @@ th{
 
     <script>
 
-      window.addEventListener(
-  "DOMContentLoaded",
-  async () => {
 
-    const token = sessionStorage.getItem("token");
+// ✅ Token globally define karo, localStorage se
+const token = localStorage.getItem("token");
 
-    if(!token){
-      window.location.replace("login.html");
-      return;
-    }
+if (!token) {
+  window.location.replace("login.html");
+}
 
-    try{
-
-      const res = await fetch(
-        "https://gsssshilla.onrender.com/verify-admin",
-        {
-          headers:{
-            Authorization:`Bearer ${token}`
-          }
-        }
-      );
-
-      const data = await res.json();
-
-      if(!data.success){
-        throw new Error();
-      }
-
-    }catch{
-
-      sessionStorage.removeItem("token");
-      localStorage.removeItem("token");
-
-      window.location.replace("login.html");
-    }
+// Auth verify (optional double-check)
+fetch("https://gsssshilla.onrender.com/verify-admin", {
+  headers: { Authorization: `Bearer ${token}` }
+})
+.then(res => res.json())
+.then(data => {
+  if (!data.success) {
+    localStorage.removeItem("token");
+    window.location.replace("login.html");
+  }
+})
+.catch(() => {
+  localStorage.removeItem("token");
+  window.location.replace("login.html");
 });
+
 
 const API =
 "https://gsssshilla.onrender.com/recent";
 
-const token =
-localStorage.getItem("token");
 
 loadUpdates();
 

@@ -609,45 +609,28 @@ canvas{
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
 
-    window.addEventListener(
-  "DOMContentLoaded",
-  async () => {
+ // ✅ Token globally define karo, localStorage se
+const token = localStorage.getItem("token");
 
-    const token = sessionStorage.getItem("token");
+if (!token) {
+  window.location.replace("login.html");
+}
 
-    if(!token){
-      window.location.replace("login.html");
-      return;
-    }
-
-    try{
-
-      const res = await fetch(
-        "https://gsssshilla.onrender.com/verify-admin",
-        {
-          headers:{
-            Authorization:`Bearer ${token}`
-          }
-        }
-      );
-
-      const data = await res.json();
-
-      if(!data.success){
-        throw new Error();
-      }
-
-    }catch{
-
-      sessionStorage.removeItem("token");
-      localStorage.removeItem("token");
-
-      window.location.replace("login.html");
-    }
+// Auth verify (optional double-check)
+fetch("https://gsssshilla.onrender.com/verify-admin", {
+  headers: { Authorization: `Bearer ${token}` }
+})
+.then(res => res.json())
+.then(data => {
+  if (!data.success) {
+    localStorage.removeItem("token");
+    window.location.replace("login.html");
+  }
+})
+.catch(() => {
+  localStorage.removeItem("token");
+  window.location.replace("login.html");
 });
-
-    const token = localStorage.getItem("token");
-
 
 
 const menuToggle = document.getElementById("menuToggle");
